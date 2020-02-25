@@ -31,7 +31,7 @@ def parseargs():
     parser.add_option('-o', '--out', dest = "out_file", type = "string", default = None, help = "name of output file to write")
     opt, arg = parser.parse_args()
     if not(opt.in_file or opt.out_file):
-        print "Error: must specify an --in and an --out file"
+        print ("Error: must specify an --in and an --out file")
         sys.exit(1)
     return opt, arg
 

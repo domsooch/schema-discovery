@@ -324,7 +324,7 @@ def ToPointLst(geoType, cLst):
         for c in cLst:
             coordLst.extend(c)
     else:
-        print 'ToPointLst:Unknown Format: %s' % geoType
+        print ('ToPointLst:Unknown Format: %s' % geoType)
         return cLst
     return coordLst
 
@@ -356,8 +356,8 @@ def CharacterizeGeometry(gg):
                     holeLst.append([c])
                 else:
                     pLst.append([c])
-                print 'Polygon: part %i has %i points: Hole: %s' % (i,
-                        len(c), hole)
+                print ('Polygon: part %i has %i points: Hole: %s' % (i,
+                        len(c), hole))
 
             return ('Polygon_w_Holes', geo_maxlen, pLst, holeLst)
         else:
@@ -391,8 +391,8 @@ def CharacterizeGeometry(gg):
             coords = NoHeightInLatLong(coords)
             pLst.extend(coords)
             lenc = ret[1]
-            print 'MultiPolygon: part %i is %s has %i points' % (i,
-                    gtype, lenc)
+            print ('MultiPolygon: part %i is %s has %i points' % (i,
+                    gtype, lenc))
             if lenc > geo_maxlen:
                 geo_maxlen = lenc
         return (gtype, geo_maxlen, pLst, holeLst)
@@ -438,7 +438,7 @@ class geometryHisto:
                 Lo = float(c[0])
                 La = float(c[1])
             except:
-                print 'Bad Coordinates sent to addCoords: ', c, cLst
+                print ('Bad Coordinates sent to addCoords: ', c, cLst)
                 return None
             self.num_coords += 1
 
@@ -564,7 +564,7 @@ class DataNode:
             parent_path = parent.path
         self.path = '%s.%s' % (parent_path, key)
         self.ListDictDesc = ''
-        self.key = unicode(key)
+        self.key = key
         self.d = {}
         self.n = 1
         self.parent_n = 1
@@ -581,12 +581,12 @@ class DataNode:
             n = self.n
         self.parent_n = n
         if self.parent_n != self.n:
-            print '%s set by Propagation parent_n %i n %i' % (self,
-                    self.parent_n, self.n)
+            print ('%s set by Propagation parent_n %i n %i' % (self,
+                    self.parent_n, self.n))
             self.Nullable = True
         if 'NoneType' in self.typeLst:
-            print '%s set by Propagation NoneType in typeLst: %s' \
-                % (self, str(self.typeLst))
+            print ('%s set by Propagation NoneType in typeLst: %s' \
+                % (self, str(self.typeLst)))
             self.Nullable = True
         for k in self.d.keys():
             self.d[k].PropagateNumRecs(n)
@@ -597,7 +597,7 @@ class DataNode:
 
             # if k == 'geometry': continue
 
-            print self.d[k].path
+            print (self.d[k].path)
             oLst.extend(self.d[k].ListAllNodes())
         return oLst
 
@@ -609,7 +609,7 @@ class DataNode:
         # 2. Hold child nodes for embedded types
         # 3. Deal with unusual geometry where a builtin looks on the surface like a dictionary
 
-        key = unicode(key)
+        #key = key.unicode()
 
         # Seen this key before?
 
@@ -626,23 +626,16 @@ class DataNode:
 
                     # scalar histograms have a different interface for the add function
 
-                    print '''Tried to load this:
- %s 
-
- Into this: %s''' \
-                        % (str(dictorobj), str(self.d[key]))
-                    print 'This attribute probably has a mixture of geometry and multiple other types. Unsupported.'
+                    print ('Tried to load this: %s Into this: %s' % (str(dictorobj), str(self.d[key])))
+                    print ('This attribute probably has a mixture of geometry and multiple other types. Unsupported.')
                     sys.exit(0)
             else:
                 try:
                     self.d[key].incr()  # just keeps track of the fact that some value existed for this record
                 except:
-                    print '''Tried to load this:
- %s 
-
- Into this: %s''' \
-                        % (str(dictorobj), str(self.d[key]))
-                    print 'This attribute probably has a mixture of geometry and multiple other types. Unsupported.'
+                    print ('''Tried to load this: %s Into this: %s''' \
+                        % (str(dictorobj), str(self.d[key])))
+                    print ('This attribute probably has a mixture of geometry and multiple other types. Unsupported.')
                     sys.exit(0)
         else:
 
@@ -808,7 +801,7 @@ class DataNode:
                 node_index = n
                 break
         if node_index == None:
-            print 'could not find outer node'
+            print ('could not find outer node')
             node_index = 1
 
             # outerNode = nLst[node_index]
@@ -949,12 +942,12 @@ class DataNode:
         return (oLst[0], '--[%s] <<Choose' % ostr)
 
     def GenerateDDL_CreateType(self, schemaName, table_name):
-        print 'CreateType %s dict: [n=%i]' \
-            % (self.DDL_TableName(schemaName, table_name), len(self.d))
+        print ('CreateType %s dict: [n=%i]' \
+            % (self.DDL_TableName(schemaName, table_name), len(self.d)))
         if self.Generate_DDL_TableTypeOrScalar() == 'type':
             Lst = ['CREATE TYPE %s AS RECORD ('
                    % self.DDL_TableName(schemaName, table_name)]
-            keyLst = self.d.keys()
+            keyLst = list(self.d.keys())
 
             if keyLst:
                 keyLst.sort()
@@ -1005,7 +998,7 @@ class DataNode:
     def GenerateDDL_CreateTable(self, schemaName, tableName):
         if self.Generate_DDL_TableTypeOrScalar() == 'type':
             Lst = ['CREATE TABLE %s.%s (' % (schemaName, tableName)]
-            keyLst = self.d.keys()
+            keyLst = list(self.d.keys())
             keyLst.sort()
             lastKey = keyLst[-1]
             dumpLastComma = False
@@ -1078,7 +1071,7 @@ if __name__ == '__main__':
     for inpath in FileLst:
         n_f = 0
         f += 1
-        print inpath
+        print (inpath)
         ifn = os.path.basename(inpath)
         infp = fileinput.input(inpath)
         l = 0
@@ -1086,8 +1079,8 @@ if __name__ == '__main__':
             n_f += 1
             l += 1
             if l % 1000 == 0:
-                print 'Files %s %i of %i total records processed %i ' \
-                    % (ifn, f, numf, n)
+                print ('Files %s %i of %i total records processed %i ' \
+                    % (ifn, f, numf, n))
 
                 # print line
             # print "%imod%i %i"%(l, sampler, l%sampler)
@@ -1107,10 +1100,10 @@ if __name__ == '__main__':
                     line = line[:-2]
                 jsonObj = json.loads(line)
             except:
-                print '''Failed Reading this line %i of %i in %s:
+                print ('''Failed Reading this line %i of %i in %s:
 >>%s<<
 ''' \
-                    % (l, n, ifn, line)
+                    % (l, n, ifn, line))
                 continue
             if maxrecsperfile and n_f > maxrecsperfile:
                 break
@@ -1123,9 +1116,9 @@ if __name__ == '__main__':
     testOut = FileLst_str + '\n' + testOut
     ddlStr = RootNode.GenerateDDL(schema_name, table_name,
                                   CleanUpInput=DDL_CleanUpInput)
-    print ddlStr
+    print (ddlStr)
 
-    print ddl_out_path
+    print (ddl_out_path)
     fp = open(ddl_out_path, 'w')
     fp.write(ddlStr)
     fp.close()
